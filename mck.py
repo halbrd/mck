@@ -4,9 +4,10 @@ import argparse
 from pathlib import Path
 import logging
 import mutagen
+import subprocess
 
 logging.basicConfig(
-    level=logging.ERROR,
+    level=logging.INFO,
     format='%(levelname)8s: %(message)s',
 )
 
@@ -22,8 +23,8 @@ def check(file, formats):
         logging.error(f'bitrate too low ({bitrate}kbps): {file}')
 
 def spek(file):
-    print('speking file ' + str(file)); return
-    pass
+    logging.info('speking ' + file.name)
+    subprocess.run(['spek', file.as_posix()], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def convert(file, output_format):
     print('converting file ' + str(file)); return
@@ -71,9 +72,10 @@ files = [file for file in Path(args.path).glob('**/*')
     if file.is_file()
     and not 'extras' in file.parts  # we only care about files that are not in extras
     and not file.name == '.plexignore']  # also ignore .plexignore
+files = sorted(files)
 
 if args.action == 'check':
-    albums = set([file.parent for file in files])
+    albums = sorted(set([file.parent for file in files]))
     for album in albums:
         check_album(album, args.select_formats)
 
