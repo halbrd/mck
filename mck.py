@@ -12,8 +12,7 @@ logging.basicConfig(
 )
 
 def check(file, formats):
-    return
-    if not file.suffix in formats:
+    if not file.suffix.lstrip('.') in formats:
         return
 
     mutafile = mutagen.File(str(file))
