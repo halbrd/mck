@@ -72,8 +72,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('action',
     choices=['check', 'spek', 'convert'],
     help='specify task to perform')
-parser.add_argument('path',
-    nargs='?',
+parser.add_argument('paths',
+    nargs='*',
     default='.',
     help='specify path to find music in')
 parser.add_argument('--select-formats',
@@ -88,7 +88,7 @@ parser.add_argument('--output-format',
 args = parser.parse_args()
 
 # find files to operate on
-files = [file for file in Path(args.path).glob('**/*')
+files = [file for path in args.paths for file in Path(path).glob('**/*')
     if file.is_file()
     and not 'extras' in file.parts  # we only care about files that are not in extras
     and not file.name == '.plexignore']  # also ignore .plexignore
