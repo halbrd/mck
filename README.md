@@ -33,10 +33,10 @@ mck spek <path/to/music>
 > Requires `ffmpeg` to be installed
 
 ```
-mck convert <path/to/music> --output-format <fmt>
+mck convert <path/to/music> [--output-format <fmt>]
 ```
 
-Supported formats: `m4a`, `mp3`, `flac`
+Supported formats: `m4a`, `mp3`, `flac`. Default: `m4a`.
 
 ## Options
 

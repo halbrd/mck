@@ -75,6 +75,7 @@ parser.add_argument('action',
 parser.add_argument('paths',
     nargs='*',
     default='.',
+    metavar='path',
     help='specify path to find music in')
 parser.add_argument('--select-formats',
     nargs='*',
