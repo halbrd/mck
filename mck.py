@@ -83,13 +83,10 @@ parser.add_argument('--select-formats',
     help='filter inputs by file format')
 parser.add_argument('--output-format',
     choices=ffmpeg_options_for.keys(),
+    default='m4a',
     help='specify output file format for the `convert` action')
 
 args = parser.parse_args()
-
-# validate arguments
-if args.action == 'convert' and args.output_format is None:
-    parser.error('output format must be specified for `convert` action')
 
 # find files to operate on
 files = [file for path in args.paths for file in Path(path).glob('**/*')
