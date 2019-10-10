@@ -87,6 +87,10 @@ parser.add_argument('--output-format',
 
 args = parser.parse_args()
 
+# validate arguments
+if args.action == 'convert' and args.output_format is None:
+    parser.error('output format must be specified for `convert` action')
+
 # find files to operate on
 files = [file for path in args.paths for file in Path(path).glob('**/*')
     if file.is_file()
