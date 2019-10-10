@@ -11,23 +11,42 @@ logging.basicConfig(
     format='%(levelname)8s: %(message)s',
 )
 
-def check(file, formats):
-    if not file.suffix.lstrip('.') in formats:
-        return
-
+def check_audio(file):
     mutafile = mutagen.File(str(file))
     bitrate = int(mutafile.info.bitrate / 1000)
 
     if not bitrate > 200:
         logging.error(f'bitrate too low ({bitrate}kbps): {file}')
 
-def spek(file):
+def spek_audio(file):
     logging.info('speking ' + file.name)
     subprocess.run(['spek', file.as_posix()], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def convert(file, output_format):
-    print('converting file ' + str(file)); return
-    pass
+ffmpeg_options_for = {
+    'm4a': ['-map', '0:a', '-c:a', 'aac', '-b:a', '257k'],
+    # note: the output quality for mp3 is shitty but I'm pretty sure it's just because mp3 is a shitty format
+    # still, maybe there are some ffmpeg settings that would improve it
+    'mp3': ['-q:a', '0', '-map_metadata', '0', '-id3v2_version', '4'],
+    'flac': ['-c:a', 'flac'],
+}
+
+def convert_audio(file, output_format):
+    logging.info(f'converting to {output_format}: {file.name}')
+
+    dest = file.parent / file.parent.name
+    if dest.is_file():
+        raise FileExistsError(f'can\'t convert "{file.name}" because a file named "{dest.name}" already exists in the folder "{dest.name}"')
+    if not dest.is_dir():
+        dest.mkdir()
+
+    subprocess.run(
+        ['ffmpeg', '-y', '-i', file.as_posix(), '-loglevel', 'warning'] \
+        + ffmpeg_options_for[output_format] \
+        # converted files go in a copy of the original folder, in the original folder
+        # eg.      Coldplay -- X&Y/1-01 Square One.flac
+        # goes to  Coldplay -- X&Y/Coldplay -- X&Y/1-01 Square One.m4a
+        + [dest / file.with_suffix('.' + output_format).name]
+    )
 
 def check_album(album, formats):
     # check artist/album
@@ -59,32 +78,40 @@ parser.add_argument('path',
     help='specify path to find music in')
 parser.add_argument('--select-formats',
     nargs='*',
-    default=['m4a', 'flac', 'mp3'],
+    default=ffmpeg_options_for.keys(),
     metavar='format',
     help='filter inputs by file format')
 parser.add_argument('--output-format',
+    choices=ffmpeg_options_for.keys(),
     help='specify output file format for the `convert` action')
 
 args = parser.parse_args()
 
+# find files to operate on
 files = [file for file in Path(args.path).glob('**/*')
     if file.is_file()
     and not 'extras' in file.parts  # we only care about files that are not in extras
     and not file.name == '.plexignore']  # also ignore .plexignore
 files = sorted(files)
 
+# perform checks that need the context of an album
 if args.action == 'check':
     albums = sorted(set([file.parent for file in files]))
     for album in albums:
         check_album(album, args.select_formats)
 
+# perform individual file checks
 for file in files:
 
+    # only operate on selected audio files
+    if not file.suffix.lstrip('.') in args.select_formats:
+        continue
+
     if args.action == 'check':
-        check(file, args.select_formats)
+        check_audio(file)
 
     elif args.action == 'spek':
-        spek(file)
+        spek_audio(file)
 
     elif args.action == 'convert':
-        convert(file, args.output_format)
+        convert_audio(file, args.output_format)
