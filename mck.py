@@ -62,7 +62,7 @@ def check_album(album, formats):
         if not (
             file.is_dir() and file.name == 'extras'
             or file.is_file() and file.name == 'cover.jpg'
-            or file.is_file() and file.suffix.lstrip('.') in formats
+            or file.is_file() and file.suffix.lstrip('.').lower() in formats
         ):
             logging.error(f'unexpected file/folder "{file.name}" found in "{album.name}"')
 
@@ -106,7 +106,7 @@ if args.action == 'check':
 for file in files:
 
     # only operate on selected audio files
-    if not file.suffix.lstrip('.') in args.select_formats:
+    if not file.suffix.lstrip('.').lower() in args.select_formats:
         continue
 
     if args.action == 'check':
