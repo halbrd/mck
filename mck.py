@@ -33,7 +33,7 @@ ffmpeg_options_for = {
 def convert_audio(file, output_format):
     logging.info(f'converting to {output_format}: {file.name}')
 
-    dest = file.parent / file.parent.name
+    dest = file.resolve().parent / file.resolve().parent.name
     if dest.is_file():
         raise FileExistsError(f'can\'t convert "{file.name}" because a file named "{dest.name}" already exists in the folder "{dest.name}"')
     if not dest.is_dir():
