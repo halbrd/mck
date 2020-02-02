@@ -5,6 +5,7 @@ from pathlib import Path
 import logging
 import mutagen
 import subprocess
+import sys
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,7 +21,10 @@ def check_audio(file):
 
 def spek_audio(file):
     logging.info('speking ' + file.name)
-    subprocess.run(['spek', file.as_posix()], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        subprocess.run(['spek', file.as_posix()], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except KeyboardInterrupt:
+        sys.exit(0)
 
 ffmpeg_options_for = {
     'm4a': ['-map', '0:a', '-c:a', 'aac', '-b:a', '257k', '-ar', '44100'],
