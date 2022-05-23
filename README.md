@@ -1,5 +1,7 @@
 # mck
 
+![mck](mck.jpg)
+
 `mck` will find music recursively in the directory(ies) you specify, and can perform automated organization and quality checks, invoke [spek](https://github.com/alexkay/spek) for manual spectrographic quality checking, and invoke [ffmpeg](https://www.ffmpeg.org/download.html) to convert them to `m4a`, `mp3`, or `flac` with sensible default settings.
 
 ## Operations
