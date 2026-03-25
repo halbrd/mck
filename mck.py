@@ -30,8 +30,8 @@ ffmpeg_options_for = {
     'm4a': ['-map', '0:a', '-c:a', 'libfdk_aac', '-b:a', '257k', '-ar', '44100'],
     # note: the output quality for mp3 is shitty but I'm pretty sure it's just because mp3 is a shitty format
     # still, maybe there are some ffmpeg settings that would improve it
-    # 'mp3': ['-q:a', '0', '-map_metadata', '0', '-id3v2_version', '4'],
-    # 'flac': ['-c:a', 'flac'],
+    'mp3': ['-q:a', '0', '-map_metadata', '0', '-id3v2_version', '4'],
+    'flac': ['-c:a', 'flac'],
 }
 
 def convert_audio(file, output_format):
